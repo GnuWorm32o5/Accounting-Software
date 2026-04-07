@@ -21,7 +21,7 @@ class IMS:
         y = (screen_h // 2) - (700 // 2)
         self.root.after(100, self.root.deiconify)
         self.root.geometry(f"1350x700+{x}+{y}")
-        self.root.title("Racunovodstveni softver")
+        self.root.title("Računovodstveni softver")
         self.root.config(bg="white")        # dark navy blue #1e2a3a
         self.root.resizable(False, False)
         #self.root.state("zoomed")
@@ -111,7 +111,7 @@ class IMS:
         self.lbl_account.place(x=1000, y=320, height=150, width=300)
 
         #Copyright bottom =============================================================================================
-        lbl_footer = Label(self.root, text="Copyright @ Motobike DOO Bečej, 2026." , font=("Segoe UI", 7), bd=2, relief=GROOVE)
+        lbl_footer = Label(self.root, text="Stevan Glavaski" , font=("Segoe UI", 7), bd=2, relief=GROOVE)
         lbl_footer.pack(side=BOTTOM, fill=X)
 
     # Weather block of code, 5 days ahead =========================================================================
