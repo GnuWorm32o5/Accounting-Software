@@ -1,6 +1,7 @@
 from tkinter import*
 from PIL import Image,ImageTk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+import sqlite3
 
 class employeeClass:
     def __init__(self,root):
@@ -135,7 +136,7 @@ class employeeClass:
 
         #=========Buttons================================================================================================
 
-        btn_save=Button(self.root, font=("Segoe UI", 12), bg="white", relief="groove", text="Sačuvati")
+        btn_save=Button(self.root,command=self.add, font=("Segoe UI", 12), bg="white", relief="groove", text="Sačuvati")
         btn_save.place(x=350, y=550)
 
         btn_update = Button(self.root, font=("Segoe UI", 12), bg="white", relief="groove", text="Ažurirati")
@@ -196,8 +197,16 @@ class employeeClass:
         scrollx.pack(side=BOTTOM, fill=X)
         self.EmployeeTable.pack(fill=BOTH, expand=1)
 
+        #=================================================================================================
 
-
+    def add(self):
+        con = sqlite3.connect(database=r'ims.db')
+        cur = con.cursor()
+        try:
+            if self.var_emp_id.get() == "":
+                messagebox.showerror("Greška", "ID Zaposlenog mora biti unet!")
+        except Exception as ex:
+            messagebox.showerror("Greška", f" Greška iz razloga: {str(ex)}")
 
 
 if __name__=="__main__":

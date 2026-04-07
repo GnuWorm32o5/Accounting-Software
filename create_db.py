@@ -4,17 +4,16 @@ def create_db():
     cur=con.cursor()
     cur.execute("""CREATE TABLE IF NOT EXISTS employee(
         eid INTEGER PRIMARY KEY AUTOINCREMENT,
-        dz text,
-        di text,
         name text,
-        lname text,
-        contact text,
-        user text,
-        pass text,
         email text,
+        gender text,
+        contact text,
+        dob text,
+        doj text,
+        pass text,
+        utype text,
         adress text,
-        pay text,
-        usertype text
+        salary text,
     )""")
     con.commit()
 
