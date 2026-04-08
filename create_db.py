@@ -13,6 +13,7 @@ def create_db():
         pass text,
         utype text,
         adress text,
+        
         salary text,
     )""")
     con.commit()

@@ -135,7 +135,7 @@ class employeeClass:
         btn_save=Button(self.root,command=self.add, font=("Segoe UI", 12), bg="white", relief="groove", text="Sačuvati")
         btn_save.place(x=350, y=550)
 
-        btn_update = Button(self.root, font=("Segoe UI", 12), bg="white", relief="groove", text="Ažurirati")
+        btn_update = Button(self.root, command=self.update, font=("Segoe UI", 12), bg="white", relief="groove", text="Ažurirati")
         btn_update.place(x=600, y=550)
 
         btn_delete = Button(self.root, font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
@@ -242,7 +242,7 @@ class employeeClass:
                 cur.execute("Select  * from employee where eid=?", (self.var_emp_id.get(),))
                 row=cur.fetchone()
                 if row is not None:
-                    messagebox.showerror("Greška", "Broj je prethodno dodeljen postojećem zaposlenom." )
+                    messagebox.showerror("Greška", "Broj je prethodno dodeljen postojećem zaposlenom.", parent=self.root )
                 else:
                     cur.execute("Insert into employee (eid, name, email, gender, contact, dob, doj, pass, utype, adress, salary) values(?,?,?,?,?,?,?,?,?,?,?)",(
                                         self.var_emp_id.get(),
@@ -293,6 +293,56 @@ class employeeClass:
         self.var_utype.set(row[8])
         self.var_adress.set(row[9])
         self.var_salary.set(str(row[10]))
+
+    def update(self):
+        if self.var_emp_id.get() == "":
+            messagebox.showerror("Greška", "ID Zaposlenog mora biti unet!", parent=self.root)
+            return
+
+        con = sqlite3.connect(database=r'ims.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT * FROM employee WHERE eid=?", (self.var_emp_id.get(),))
+            row = cur.fetchone()
+            if row is None:
+                messagebox.showerror("Greška", "Nevažeći ID zaposlenog.", parent=self.root)
+            else:
+                cur.execute(
+                    """UPDATE employee
+                       SET name=?,
+                           email=?,
+                           gender=?,
+                           contact=?,
+                           dob=?,
+                           doj=?,
+                           pass=?,
+                           utype=?,
+                           adress=?,
+                           salary=?
+                       WHERE eid = ?""",
+                    (
+                        self.var_name.get(),
+                        self.var_email.get(),
+                        self.var_gender.get(),
+                        self.var_contact.get(),
+                        self.var_dob.get(),
+                        self.var_doj.get(),
+                        self.var_password.get(),
+                        self.var_utype.get(),
+                        self.var_adress.get(),
+                        self.var_salary.get(),
+                        self.var_emp_id.get()  # eid goes LAST — it's the WHERE clause
+                    )
+                )
+                con.commit()
+                messagebox.showinfo("Uspeh!", "Uspešno ažuriran zaposleni sa spiska!", parent=self.root)
+                self.show()
+        except Exception as ex:
+            messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
+        finally:
+            con.close()
+
+        
 
 
 
