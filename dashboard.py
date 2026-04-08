@@ -13,12 +13,11 @@ import json
 class IMS:
     def __init__(self, root):
         self.root = root
-        self.root.update_idletasks()
-        self.root.update_idletasks()
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
         x = (screen_w // 2) - (1350 // 2)
         y = (screen_h // 2) - (700 // 2)
+        self.root.geometry(f"1350x700+{x}+{y}")
         self.root.after(100, self.root.deiconify)
         self.root.geometry(f"1350x700+{x}+{y}")
         self.root.title("Računovodstveni softver")

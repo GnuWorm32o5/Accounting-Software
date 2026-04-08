@@ -15,7 +15,7 @@ class supplierClass:
         self.root.geometry(f"1350x700+{x}+{y}")
         self.root.after(100, self.root.deiconify)
         self.root.title("Dobavljac")
-        self.root.config(bg="")
+        self.root.config(bg="white")
         self.root.resizable(False, False)
         self.root.focus_force()
         #============================================================
