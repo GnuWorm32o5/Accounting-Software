@@ -43,12 +43,12 @@ class employeeClass:
         SearchFrame.place(x=250,y=20,width=880,height=80)
 
         #======Options================================================================================================
-        cmb_search=ttk.Combobox(SearchFrame, textvariable=self.var_search_by, values=("Odabrati" , "Ime", "Prezime", "Kontakt", "Email"), state="readonly", justify="center", font=("Segoe UI", 15))
+        cmb_search=ttk.Combobox(SearchFrame, textvariable=self.var_search_by, values=("Odabrati" , "Ime", "Kontakt", "Email"), state="readonly", justify="center", font=("Segoe UI", 15))
         cmb_search.place(x=10,y=10,width=180)
         cmb_search.current(0)
 
         txt_search = Entry(SearchFrame, textvariable=self.var_search_txt, font=("Segoe UI", 15), bg="white").place(x=300, y=10, width=300)
-        btn_search = Button(SearchFrame,text="Pretraga", font=("Segoe UI", 15), bg="white")
+        btn_search = Button(SearchFrame,command=self.search, text="Pretraga", font=("Segoe UI", 15), bg="white")
         btn_search.place(x=650, y=8, width=200, height=30)
 
         #=========Title===================================================================================================
@@ -121,8 +121,9 @@ class employeeClass:
         txt_password = Entry(self.root, textvariable=self.var_password, font=("Segoe UI", 12), bg="white")
         txt_password.place(x=700, y=400)
 
-        txt_utype = ttk.Combobox(self.root, textvariable=self.var_utype,values=("Admin","Zaposleni"), font=("Segoe UI", 12))
+        txt_utype = ttk.Combobox(self.root, textvariable=self.var_utype,values=("Admin","Korisnik"), state="readonly", font=("Segoe UI", 12))
         txt_utype.place(x=1100, y=400)
+        txt_utype.current(1)
 
         txt_adress = Entry(self.root, textvariable=self.var_adress, font=("Segoe UI", 12), bg="white")
         txt_adress.place(x=350, y=500)
@@ -141,7 +142,7 @@ class employeeClass:
         btn_delete = Button(self.root, command=self.delete, font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
         btn_delete.place(x=850, y=550)
 
-        btn_clear = Button(self.root, font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
+        btn_clear = Button(self.root,command=self.clear, font=("Segoe UI", 12), bg="white", relief="groove", text="Očistiti polja")
         btn_clear.place(x=1100, y=550)
 
         #=========================================================================================================
@@ -361,11 +362,65 @@ class employeeClass:
                         cur.execute("delete from employee where eid=?", (self.var_emp_id.get(),))
                         con.commit()
                         messagebox.showinfo("Brisanje","Podaci uspešno obrisani.")
-                        self.show()
+                        self.clear()
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
         finally:
             con.close()
+
+
+    def clear(self):
+        self.var_emp_id.set("")
+        self.var_name.set("")
+        self.var_email.set("")
+        self.var_gender.set("")
+        self.var_contact.set("")
+        self.var_dob.set("")
+        self.var_doj.set("")
+        self.var_password.set("")
+        self.var_utype.set("Korisnik")
+        self.var_adress.set("")
+        self.var_salary.set("")
+        self.var_search_txt.set("")
+        self.var_search_by.set("Odabrati")
+
+
+    ALLOWED_COLUMNS = {"name", "email", "contact", "gender", "utype", "eid"}
+
+    COLUMN_MAP = {
+        "Ime": "name",
+        "Email": "email",
+        "Kontakt": "contact"
+    }
+
+    def search(self):
+        con = sqlite3.connect(database=r'ims.db')
+        cur = con.cursor()
+        try:
+            if self.var_search_by.get() == "Odabrati":
+                messagebox.showerror("Greška", "Morate odabrati opciju za pretragu.", parent=self.root)
+            elif self.var_search_txt.get() == "":
+                messagebox.showerror("Greška", "Polje za pretragu ne može biti prazno.", parent=self.root)
+            elif self.var_search_by.get() not in self.COLUMN_MAP:
+                messagebox.showerror("Greška", "Nevažeća kolona pretrage.", parent=self.root)
+            else:
+                col = self.COLUMN_MAP[self.var_search_by.get()]
+                search_val = f"%{self.var_search_txt.get()}%"
+                cur.execute(f"SELECT * FROM employee WHERE {col} LIKE ?", (search_val,))
+                rows = cur.fetchall()
+                if rows:
+                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                    for row in rows:
+                        self.EmployeeTable.insert('', END, values=row)
+                else:
+                    messagebox.showerror("Greška", "Nije pronađen.", parent=self.root)
+        except Exception as ex:
+            messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
+        finally:
+            con.close()
+
+
+
 
 
 
