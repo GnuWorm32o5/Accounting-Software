@@ -138,7 +138,7 @@ class employeeClass:
         btn_update = Button(self.root, command=self.update, font=("Segoe UI", 12), bg="white", relief="groove", text="Ažurirati")
         btn_update.place(x=600, y=550)
 
-        btn_delete = Button(self.root, font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
+        btn_delete = Button(self.root, command=self.delete, font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
         btn_delete.place(x=850, y=550)
 
         btn_clear = Button(self.root, font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
@@ -258,11 +258,12 @@ class employeeClass:
                                         self.var_salary.get()
                     ))
                     con.commit()
-                    con.close()
                     messagebox.showinfo("Uspeh!", "Uspešno dodat zaposleni na spisak!", parent=self.root)
                     self.show()
         except Exception as ex:
             messagebox.showerror("Greška", f" Greška iz razloga: {str(ex)}")
+        finally:
+            con.close()
 
     def show(self):
         con = sqlite3.connect(database=r'ims.db')
@@ -342,7 +343,29 @@ class employeeClass:
         finally:
             con.close()
 
-        
+
+    def delete(self):
+        con=sqlite3.connect(database=r'ims.db')
+        cur = con.cursor()
+        try:
+            if self.var_emp_id.get() == "":
+                messagebox.showerror("Greška", "ID zaposlenog mora biti unet!", parent=self.root)
+            else:
+                cur.execute("Select * from employee where eid=?", (self.var_emp_id.get(),))
+                row=cur.fetchone()
+                if row is None:
+                    messagebox.showerror("Greška", "Nevažeći ID zaposlenog.", parent=self.root)
+                else:
+                    op=messagebox.askyesno("Potvrda", "Da li stvarno  želite da obrišete zaposlenog?", parent=self.root)
+                    if op==True:
+                        cur.execute("delete from employee where eid=?", (self.var_emp_id.get(),))
+                        con.commit()
+                        messagebox.showinfo("Brisanje","Podaci uspešno obrisani.")
+                        self.show()
+        except Exception as ex:
+            messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
+        finally:
+            con.close()
 
 
 
