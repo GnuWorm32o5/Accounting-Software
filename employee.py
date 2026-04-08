@@ -86,12 +86,11 @@ class employeeClass:
         lbl_utype=Label(self.root,text="Nalog",font=("Segoe UI", 12), bg="white")
         lbl_utype.place(x =1000, y=400)
 
-        lbl_salary = Label(self.root, text="Adresa", font=("Segoe UI", 12), bg="white")
-        lbl_salary.place(x=200, y=500)
+        lbl_adress = Label(self.root, text="Adresa", font=("Segoe UI", 12), bg="white")
+        lbl_adress.place(x=200, y=500)
 
-        lbl_adress=Label(self.root, text="Plata",font=("Segoe UI", 12), bg="white")
-        lbl_adress.place(x =600, y=500)
-
+        lbl_salary = Label(self.root, text="Plata", font=("Segoe UI", 12), bg="white")
+        lbl_salary.place(x=600, y=500)
 
 
 
@@ -277,13 +276,16 @@ class employeeClass:
                 self.EmployeeTable.insert('',END,values=row)
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
+        finally:
+            con.close()
 
     def get_data(self, event):
-        f=self.EmployeeTable.focus()
-        content=(self.EmployeeTable.item(f))
-        row=content['values']
-        print(row)
-
+        f = self.EmployeeTable.focus()
+        content = self.EmployeeTable.item(f)
+        row = content['values']
+        if not row:  # ✅ guard against empty click
+            return
+        # remove print(row) before shipping
         self.var_emp_id.set(row[0])
         self.var_name.set(row[1])
         self.var_email.set(row[2])
@@ -363,6 +365,7 @@ class employeeClass:
                         con.commit()
                         messagebox.showinfo("Brisanje","Podaci uspešno obrisani.")
                         self.clear()
+                        self.show()
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
         finally:
@@ -385,7 +388,6 @@ class employeeClass:
         self.var_search_by.set("Odabrati")
 
 
-    ALLOWED_COLUMNS = {"name", "email", "contact", "gender", "utype", "eid"}
 
     COLUMN_MAP = {
         "Ime": "name",
