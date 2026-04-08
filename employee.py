@@ -6,6 +6,7 @@ import sqlite3
 class employeeClass:
     def __init__(self,root):
         self.root = root
+        self.create_db()
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
         x = (screen_w // 2) - (1350 // 2)
@@ -33,12 +34,8 @@ class employeeClass:
         self.var_email=StringVar()
         self.var_password=StringVar()
         self.var_utype=StringVar()
-        self.var_salary=StringVar()
         self.var_adress=StringVar()
         self.var_salary=StringVar()
-
-
-
 
 
         #========Search Frame================================================================================================
@@ -89,10 +86,10 @@ class employeeClass:
         lbl_utype=Label(self.root,text="Nalog",font=("Segoe UI", 12), bg="white")
         lbl_utype.place(x =1000, y=400)
 
-        lbl_salary = Label(self.root, text="Plata", font=("Segoe UI", 12), bg="white")
+        lbl_salary = Label(self.root, text="Adresa", font=("Segoe UI", 12), bg="white")
         lbl_salary.place(x=200, y=500)
 
-        lbl_adress=Label(self.root, text="Adresa",font=("Segoe UI", 12), bg="white")
+        lbl_adress=Label(self.root, text="Plata",font=("Segoe UI", 12), bg="white")
         lbl_adress.place(x =600, y=500)
 
 
@@ -179,7 +176,7 @@ class employeeClass:
         self.EmployeeTable.heading("adress", text="Adresa", anchor=CENTER)
         self.EmployeeTable.heading("salary", text="Plata", anchor=CENTER)
 
-        self.EmployeeTable.column("eid", width=100)
+        self.EmployeeTable.column("eid", width=15)
         self.EmployeeTable.column("name", width=100)
         self.EmployeeTable.column("email", width=100)
         self.EmployeeTable.column("gender", width=100)
@@ -196,16 +193,107 @@ class employeeClass:
         scrollx.pack(side=BOTTOM, fill=X)
         self.EmployeeTable.pack(fill=BOTH, expand=1)
 
+        self.EmployeeTable.bind("<ButtonRelease-1>", self.get_data)
+
+
+        self.show()
         #=================================================================================================
+
+    def create_db(self):
+        con = sqlite3.connect(database=r"ims.db")
+        cur = con.cursor()
+        cur.execute("""CREATE TABLE IF NOT EXISTS employee
+                       (
+                           eid
+                           INTEGER
+                           PRIMARY
+                           KEY,
+                           name
+                           TEXT,
+                           email
+                           TEXT,
+                           gender
+                           TEXT,
+                           contact
+                           TEXT,
+                           dob
+                           TEXT,
+                           doj
+                           TEXT,
+                           pass
+                           TEXT,
+                           utype
+                           TEXT,
+                           adress
+                           TEXT,
+                           salary
+                           TEXT
+                       )""")
+        con.commit()
+        con.close()
 
     def add(self):
         con = sqlite3.connect(database=r'ims.db')
         cur = con.cursor()
         try:
             if self.var_emp_id.get() == "":
-                messagebox.showerror("Greška", "ID Zaposlenog mora biti unet!")
+                messagebox.showerror("Greška", "ID Zaposlenog mora biti unet!", parent=self.root)
+            else:
+                cur.execute("Select  * from employee where eid=?", (self.var_emp_id.get(),))
+                row=cur.fetchone()
+                if row is not None:
+                    messagebox.showerror("Greška", "Broj je prethodno dodeljen postojećem zaposlenom." )
+                else:
+                    cur.execute("Insert into employee (eid, name, email, gender, contact, dob, doj, pass, utype, adress, salary) values(?,?,?,?,?,?,?,?,?,?,?)",(
+                                        self.var_emp_id.get(),
+                                        self.var_name.get(),
+                                        self.var_email.get(),
+                                        self.var_gender.get(),
+                                        self.var_contact.get(),
+                                        self.var_dob.get(),
+                                        self.var_doj.get(),
+                                        self.var_password.get(),
+                                        self.var_utype.get(),
+                                        self.var_adress.get(),
+                                        self.var_salary.get()
+                    ))
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Uspeh!", "Uspešno dodat zaposleni na spisak!", parent=self.root)
+                    self.show()
         except Exception as ex:
             messagebox.showerror("Greška", f" Greška iz razloga: {str(ex)}")
+
+    def show(self):
+        con = sqlite3.connect(database=r'ims.db')
+        cur = con.cursor()
+        try:
+            cur.execute("Select * from employee")
+            rows=cur.fetchall()
+            self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+            for row in rows:
+                self.EmployeeTable.insert('',END,values=row)
+        except Exception as ex:
+            messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
+
+    def get_data(self, event):
+        f=self.EmployeeTable.focus()
+        content=(self.EmployeeTable.item(f))
+        row=content['values']
+        print(row)
+
+        self.var_emp_id.set(row[0])
+        self.var_name.set(row[1])
+        self.var_email.set(row[2])
+        self.var_gender.set(row[3])
+        self.var_contact.set(row[4])
+        self.var_dob.set(row[5])
+        self.var_doj.set(row[6])
+        self.var_password.set(row[7])
+        self.var_utype.set(row[8])
+        self.var_adress.set(row[9])
+        self.var_salary.set(str(row[10]))
+
 
 
 if __name__=="__main__":
