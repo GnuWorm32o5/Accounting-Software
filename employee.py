@@ -156,7 +156,7 @@ class employeeClass:
 
         self.EmployeeTable = ttk.Treeview(
             emp_frame,
-            columns=("eid", "name", "email", "gender", "contact", "dob", "doj", "pass", "utype", "adress", "salary"),
+            columns=("eid", "name", "email", "gender", "contact", "dob", "doj", "password", "utype", "adress", "salary"),
             show="headings"
         )
         scrolly.config(command=self.EmployeeTable.yview)
@@ -171,7 +171,7 @@ class employeeClass:
         self.EmployeeTable.heading("contact", text="Kontakt", anchor=CENTER)
         self.EmployeeTable.heading("dob", text="Dat. Za.", anchor=CENTER)
         self.EmployeeTable.heading("doj", text="Dat. Ist.", anchor=CENTER)
-        self.EmployeeTable.heading("pass", text="Šifra", anchor=CENTER)
+        self.EmployeeTable.heading("password", text="Šifra", anchor=CENTER)
         self.EmployeeTable.heading("utype", text="Tip", anchor=CENTER)
         self.EmployeeTable.heading("adress", text="Adresa", anchor=CENTER)
         self.EmployeeTable.heading("salary", text="Plata", anchor=CENTER)
@@ -183,7 +183,7 @@ class employeeClass:
         self.EmployeeTable.column("contact", width=100)
         self.EmployeeTable.column("dob", width=100)
         self.EmployeeTable.column("doj", width=100)
-        self.EmployeeTable.column("pass", width=100)
+        self.EmployeeTable.column("password", width=100)
         self.EmployeeTable.column("utype", width=100)
         self.EmployeeTable.column("adress", width=100)
         self.EmployeeTable.column("salary", width=100)
@@ -220,7 +220,7 @@ class employeeClass:
                            TEXT,
                            doj
                            TEXT,
-                           pass
+                           password
                            TEXT,
                            utype
                            TEXT,
@@ -244,7 +244,7 @@ class employeeClass:
                 if row is not None:
                     messagebox.showerror("Greška", "Broj je prethodno dodeljen postojećem zaposlenom.", parent=self.root )
                 else:
-                    cur.execute("Insert into employee (eid, name, email, gender, contact, dob, doj, pass, utype, adress, salary) values(?,?,?,?,?,?,?,?,?,?,?)",(
+                    cur.execute("Insert into employee (eid, name, email, gender, contact, dob, doj, password, utype, adress, salary) values(?,?,?,?,?,?,?,?,?,?,?)",(
                                         self.var_emp_id.get(),
                                         self.var_name.get(),
                                         self.var_email.get(),
@@ -319,7 +319,7 @@ class employeeClass:
                            contact=?,
                            dob=?,
                            doj=?,
-                           pass=?,
+                           password=?,
                            utype=?,
                            adress=?,
                            salary=?
