@@ -4,22 +4,21 @@ from tkinter import ttk, messagebox
 import sqlite3
 
 class supplierClass:
-    def __init__(self,root):
+    def __init__(self,root, on_close=None):
         self.root = root
         self.create_db()
+        self.on_close = on_close
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
         x = (screen_w // 2) - (1350 // 2)
         y = (screen_h // 2) - (700 // 2)
         self.root.geometry(f"1350x700+{x}+{y}")
         self.root.after(100, self.root.deiconify)
-        self.root.geometry(f"1350x900+{x}+{y}")
         self.root.title("Računovodstveni softver")
         self.root.config(bg="white")  # dark navy blue #1e2a3a
         self.root.resizable(False, False)
         # self.root.state("zoomed")
-        self.root.bind("<Escape>", lambda e: self.root.destroy())  # gasi se na escape
-
+        self.root.bind("<Escape>", lambda e: self.on_close() if self.on_close else self.root.destroy())
 
         #All Variables =========================================================================================
         self.var_search_by=StringVar()
@@ -49,6 +48,13 @@ class supplierClass:
         title = Label(self.root,text="Podaci dobavljača", font=("Segoe UI", 15), bg="lightblue")
         title.place(x =200, y=120, width=1000)
 
+        # ========BackButton================================================================================================
+
+        btn_back = Button(self.root,
+                          command=lambda: self.on_close() if self.on_close else self.root.destroy(),
+                          font=("Segoe UI", 12), bg="white", relief="groove", text="◄ Nazad")
+        btn_back.place(x=15, y=120)
+
 
         #====Content===and Fields===================================================================================================================
 
@@ -69,11 +75,8 @@ class supplierClass:
 
         lbl_desc=Label(self.root, text="Opis", font=("Segoe UI", 12), bg="white")
         lbl_desc.place(x=600, y=200)
-        txt_desc=Entry(self.root, textvariable=self.txt_desc, font=("Segoe UI", 12), bg="white")
-        txt_desc.place(x=700, y=200,height=250)
 
-
-
+        self.txt_desc.place(x=700, y=200, height=250, width=400)
 
         #=========Buttons================================================================================================
 
@@ -101,7 +104,7 @@ class supplierClass:
 
         self.SupplierTable = ttk.Treeview(
             emp_frame,
-            columns=("invoice","name","contact", "desc"),
+            columns=("invoice","name","contact", "description"),
             show="headings"
         )
         scrolly.config(command=self.SupplierTable.yview)
@@ -112,13 +115,13 @@ class supplierClass:
         self.SupplierTable.heading("invoice", text="Faktura", anchor=CENTER)
         self.SupplierTable.heading("name", text="Ime", anchor=CENTER)
         self.SupplierTable.heading("contact", text="Kontakt", anchor=CENTER)
-        self.SupplierTable.heading("desc", text="Opis", anchor=CENTER)
+        self.SupplierTable.heading("description", text="Opis", anchor=CENTER)
 
 
         self.SupplierTable.column("invoice", width=15)
         self.SupplierTable.column("name", width=100)
         self.SupplierTable.column("contact", width=100)
-        self.SupplierTable.column("desc", width=100)
+        self.SupplierTable.column("description", width=100)
 
 
 
@@ -137,16 +140,10 @@ class supplierClass:
         cur = con.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS supplier
                        (
-                           invoice
-                           INTEGER
-                           PRIMARY
-                           KEY,
-                           name
-                           TEXT,
-                           contact,
-                           TEXT,
-                           desc
-                           TEXT
+                           invoice INTEGER PRIMARY KEY,
+                           name TEXT,
+                           contact TEXT,
+                           description TEXT
                        )""")
         con.commit()
         con.close()
@@ -163,11 +160,11 @@ class supplierClass:
                 if row is not None:
                     messagebox.showerror("Greška", "Broj je prethodno dodeljen postojećoj fakturi.", parent=self.root )
                 else:
-                    cur.execute("Insert into supplier (invoice, name, contact, desc) values(?,?,?,?)",(
+                    cur.execute("Insert into supplier (invoice, name, contact, description) values(?,?,?,?)",(
                                         self.var_sup_invoice.get(),
                                         self.var_name.get(),
                                         self.var_contact.get(),
-                                        self.txt_desc.get('1,0', END),
+                                        self.txt_desc.get('1.0', END).strip()
 
                     ))
                     con.commit()
@@ -201,7 +198,7 @@ class supplierClass:
         self.var_sup_invoice.set(row[0])
         self.var_name.set(row[1])
         self.var_contact.set(row[2])
-        self.text_desc.delete('1.0', END)
+        self.txt_desc.delete('1.0', END)
         self.txt_desc.insert(END,row[3])
 
     def update(self):
@@ -221,8 +218,7 @@ class supplierClass:
                     """UPDATE supplier
                        SET name=?,
                            contact=?,
-                           desc=?,
-                        
+                           description=?
                        WHERE invoice = ?""",
                     (
                         self.var_name.get(),
@@ -233,7 +229,7 @@ class supplierClass:
                 )
                 con.commit()
                 messagebox.showinfo("Uspeh!", "Uspešno ažuriran podaci fakture sa spiska!", parent=self.root)
-                self.show()
+                self.clear()
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
         finally:
@@ -258,7 +254,6 @@ class supplierClass:
                         con.commit()
                         messagebox.showinfo("Brisanje","Podaci uspešno obrisani.")
                         self.clear()
-                        self.show()
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
         finally:
@@ -269,7 +264,7 @@ class supplierClass:
         self.var_sup_invoice.set("")
         self.var_name.set("")
         self.var_contact.set("")
-        self.txt_desc.set("")
+        self.txt_desc.delete('1.0', END)
         self.show()
 
 
@@ -284,23 +279,18 @@ class supplierClass:
         con = sqlite3.connect(database=r'ims.db')
         cur = con.cursor()
         try:
-            if self.var_search_by.get() == "Odabrati":
-                messagebox.showerror("Greška", "Morate odabrati opciju za pretragu.", parent=self.root)
-            elif self.var_search_txt.get() == "":
+            if self.var_search_txt.get() == "":
                 messagebox.showerror("Greška", "Polje za pretragu ne može biti prazno.", parent=self.root)
-            elif self.var_search_by.get() not in self.COLUMN_MAP:
-                messagebox.showerror("Greška", "Nevažeća opseg pretrage.", parent=self.root)
             else:
-                col = self.COLUMN_MAP[self.var_search_by.get()]
                 search_val = f"%{self.var_search_txt.get()}%"
-                cur.execute(f"SELECT * FROM supplier WHERE {col} LIKE ?", (search_val,))
+                cur.execute("SELECT * FROM supplier WHERE invoice LIKE ?", (search_val,))
                 rows = cur.fetchall()
                 if rows:
                     self.SupplierTable.delete(*self.SupplierTable.get_children())
                     for row in rows:
                         self.SupplierTable.insert('', END, values=row)
                 else:
-                    messagebox.showerror("Greška", "Nije pronađena faktura ni dobavljač.", parent=self.root)
+                    messagebox.showerror("Greška", "Nije pronađena faktura.", parent=self.root)
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
         finally:

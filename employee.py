@@ -4,8 +4,9 @@ from tkinter import ttk, messagebox
 import sqlite3
 
 class employeeClass:
-    def __init__(self,root):
+    def __init__(self,root,on_close=None):
         self.root = root
+        self.on_close = on_close
         self.create_db()
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
@@ -13,13 +14,11 @@ class employeeClass:
         y = (screen_h // 2) - (700 // 2)
         self.root.geometry(f"1350x700+{x}+{y}")
         self.root.after(100, self.root.deiconify)
-        self.root.geometry(f"1350x900+{x}+{y}")
         self.root.title("Računovodstveni softver")
         self.root.config(bg="white")  # dark navy blue #1e2a3a
         self.root.resizable(False, False)
         # self.root.state("zoomed")
-        self.root.bind("<Escape>", lambda e: self.root.destroy())  # gasi se na escape
-
+        self.root.bind("<Escape>", lambda e: self.on_close() if self.on_close else self.root.destroy())
 
         #All Variables =========================================================================================
         self.var_search_by=StringVar()
@@ -36,6 +35,7 @@ class employeeClass:
         self.var_utype=StringVar()
         self.var_adress=StringVar()
         self.var_salary=StringVar()
+
 
 
         #========Search Frame================================================================================================
@@ -55,6 +55,13 @@ class employeeClass:
 
         title = Label(self.root,text="Podaci zaposlenih", font=("Segoe UI", 15), bg="lightblue")
         title.place(x =200, y=120, width=1000)
+
+        #========BackButton================================================================================================
+
+        btn_back = Button(self.root,
+                          command=lambda: self.on_close() if self.on_close else self.root.destroy(),
+                          font=("Segoe UI", 12), bg="white", relief="groove", text="◄ Nazad")
+        btn_back.place(x=15, y=120)
 
 
         #====Content======================================================================================================================

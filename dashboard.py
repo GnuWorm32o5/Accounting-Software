@@ -19,7 +19,6 @@ class IMS:
         y = (screen_h // 2) - (700 // 2)
         self.root.geometry(f"1350x700+{x}+{y}")
         self.root.after(100, self.root.deiconify)
-        self.root.geometry(f"1350x700+{x}+{y}")
         self.root.title("Računovodstveni softver")
         self.root.config(bg="white")        # dark navy blue #1e2a3a
         self.root.resizable(False, False)
