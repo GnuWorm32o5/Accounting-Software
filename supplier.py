@@ -5,9 +5,9 @@ import sqlite3
 
 class supplierClass:
     def __init__(self,root, on_close=None):
+        self.on_close = on_close
         self.root = root
         self.create_db()
-        self.on_close = on_close
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
         x = (screen_w // 2) - (1350 // 2)
@@ -228,7 +228,7 @@ class supplierClass:
                     )
                 )
                 con.commit()
-                messagebox.showinfo("Uspeh!", "Uspešno ažuriran podaci fakture sa spiska!", parent=self.root)
+                messagebox.showinfo("Uspeh!", "Uspešno ažurirani podaci fakture sa spiska!", parent=self.root)
                 self.clear()
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)

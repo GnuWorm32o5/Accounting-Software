@@ -151,7 +151,7 @@ class employeeClass:
         btn_clear = Button(self.root,command=self.clear, font=("Segoe UI", 12), bg="white", relief="groove", text="Očistiti polja")
         btn_clear.place(x=1100, y=550)
 
-        #=========================================================================================================
+        #====Field=====================================================================================================
 
         emp_frame = Frame(self.root, bd=3, relief="groove")
         emp_frame.pack(side=BOTTOM, fill=X)
@@ -211,30 +211,17 @@ class employeeClass:
         cur = con.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS employee
                        (
-                           eid
-                           INTEGER
-                           PRIMARY
-                           KEY,
-                           name
-                           TEXT,
-                           email
-                           TEXT,
-                           gender
-                           TEXT,
-                           contact
-                           TEXT,
-                           dob
-                           TEXT,
-                           doj
-                           TEXT,
-                           password
-                           TEXT,
-                           utype
-                           TEXT,
-                           adress
-                           TEXT,
-                           salary
-                           TEXT
+                           eid INTEGER PRIMARY KEY,
+                           name TEXT,
+                           email TEXT,
+                           gender TEXT,
+                           contact TEXT,
+                           dob TEXT,
+                           doj TEXT,
+                           password TEXT,
+                           utype TEXT,
+                           adress TEXT,
+                           salary TEXT
                        )""")
         con.commit()
         con.close()

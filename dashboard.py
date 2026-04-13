@@ -44,8 +44,9 @@ class IMS:
         self.update_weather()
 
         # Dugme za logout=============================================================================================
-        btn_logout = Button(self.root, text="ODJAVA",command=self.root.destroy, font=("Segoe UI", 10, "bold"), bd=2, relief=GROOVE)
+        btn_logout = Button(self.root, text="IZLAZ",command=self.root.destroy, font=("Segoe UI", 10, "bold"), bd=2, relief=GROOVE)
         btn_logout.place(relx=1, y=0, width=150, height=50, anchor=NE)
+
 
 
         #bio nekad Image.ANTIALIAS sad je Image.LANCZOS
@@ -110,6 +111,7 @@ class IMS:
 
         #Copyright bottom =============================================================================================
         lbl_footer = Label(self.root, text="Stevan Glavaski" , font=("Segoe UI", 7), bd=2, relief=GROOVE)
+
         lbl_footer.pack(side=BOTTOM, fill=X)
 
     # Weather block of code, 5 days ahead =========================================================================
