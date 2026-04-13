@@ -1,17 +1,24 @@
 from tkinter import*
-from PIL import Image, ImageTk #pip install pillow
+from PIL import Image,ImageTk
+from tkinter import ttk, messagebox
+import sqlite3
+
 class categoryClass:
-    def __init__(self, root):
+    def __init__(self,root, on_close=None):
         self.root = root
+        # self.create_db()
+        self.on_close = on_close
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
         x = (screen_w // 2) - (1350 // 2)
         y = (screen_h // 2) - (700 // 2)
-        self.root.after(100, self.root.deiconify)
         self.root.geometry(f"1350x700+{x}+{y}")
-        self.root.title("Motobike D.O.O. Bečej - Sistem zaliha")
-        self.root.config(bg="")
+        self.root.after(100, self.root.deiconify)
+        self.root.title("Računovodstveni softver")
+        self.root.config(bg="white")  # dark navy blue #1e2a3a
         self.root.resizable(False, False)
+        # self.root.state("zoomed")
+        self.root.bind("<Escape>", lambda e: self.on_close() if self.on_close else self.root.destroy())
 
 
 if __name__=="__main__":
