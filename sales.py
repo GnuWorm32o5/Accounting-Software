@@ -14,7 +14,7 @@ class salesClass:
         y = (screen_h // 2) - (700 // 2)
         self.root.geometry(f"1350x700+{x}+{y}")
         self.root.after(100, self.root.deiconify)
-        self.root.title("Računovodstveni softver")
+        self.root.title("Prodaja")
         self.root.config(bg="white")  # dark navy blue #1e2a3a
         self.root.resizable(False, False)
         # self.root.state("zoomed")
@@ -25,7 +25,12 @@ class salesClass:
         btn_back = Button(self.root,
                           command=lambda: self.on_close() if self.on_close else self.root.destroy(),
                           font=("Segoe UI", 12), bg="white", relief="groove", text="◄ Nazad")
-        btn_back.place(x=15, y=120)
+        btn_back.place(x=15, y=50)
+
+        # =========Title===================================================================================================
+
+        title = Label(self.root, text="Upravljanje prodajom", font=("Segoe UI", 15), bg="lightblue")
+        title.place(x=200, y=50, width=1000)
 
 
 if __name__=="__main__":

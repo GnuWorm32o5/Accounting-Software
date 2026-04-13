@@ -14,7 +14,7 @@ class supplierClass:
         y = (screen_h // 2) - (700 // 2)
         self.root.geometry(f"1350x700+{x}+{y}")
         self.root.after(100, self.root.deiconify)
-        self.root.title("Računovodstveni softver")
+        self.root.title("Dobavljač")
         self.root.config(bg="white")  # dark navy blue #1e2a3a
         self.root.resizable(False, False)
         # self.root.state("zoomed")
@@ -33,7 +33,7 @@ class supplierClass:
 
         #========Search Frame================================================================================================
         SearchFrame=LabelFrame(self.root,text="Pretraga fakture", bg="white", font=("Segoe UI", 12))
-        SearchFrame.place(x=250,y=20,width=880,height=80)
+        SearchFrame.place(x=250,y=90,width=880,height=80)
 
         #======Options================================================================================================
         lbl_search=Label(SearchFrame, text="Po broju", justify="center", font=("Segoe UI", 15))
@@ -45,15 +45,15 @@ class supplierClass:
 
         #=========Title===================================================================================================
 
-        title = Label(self.root,text="Podaci dobavljača", font=("Segoe UI", 15), bg="lightblue")
-        title.place(x =200, y=120, width=1000)
+        title = Label(self.root,text="Upravljanje dobavljačima", font=("Segoe UI", 15), bg="lightblue")
+        title.place(x =200, y=50, width=1000)
 
         # ========BackButton================================================================================================
 
         btn_back = Button(self.root,
                           command=lambda: self.on_close() if self.on_close else self.root.destroy(),
                           font=("Segoe UI", 12), bg="white", relief="groove", text="◄ Nazad")
-        btn_back.place(x=15, y=120)
+        btn_back.place(x=15, y=50)
 
 
         #====Content===and Fields===================================================================================================================
