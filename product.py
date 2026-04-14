@@ -123,14 +123,14 @@ class productClass:
 
         # ======Options================================================================================================
         cmb_search = ttk.Combobox(SearchFrame, textvariable=self.var_searchby,
-                                  values=("Odabrati", "Kategorija", "Dobavljač", "Name"), state="readonly", justify="center",
+                                  values=("Odabrati", "Kategorija", "Dobavljač", "Naziv"), state="readonly", justify="center",
                                   font=("Segoe UI", 15))
         cmb_search.place(x=10, y=10, width=180)
         cmb_search.current(0)
 
         txt_search = (Entry(SearchFrame, textvariable=self.var_searchtxt, font=("Segoe UI", 15), bg="white"))
         txt_search.place(x=300, y=10, width=300)
-        btn_search = Button(SearchFrame, text="Pretraga", font=("Segoe UI", 15), bg="white")
+        btn_search = Button(SearchFrame,command=self.search, text="Pretraga", font=("Segoe UI", 15), bg="white")
         btn_search.place(x=650, y=8, width=200, height=30)
 
 
@@ -348,28 +348,31 @@ class productClass:
         self.var_price.set("")
         self.var_status.set("Odabrati")
 
-
-
+    COLUMN_MAP = {
+        "Kategorija": "category",
+        "Dobavljač": "supplier",
+        "Naziv": "name"
+    }
 
     def search(self):
         con = sqlite3.connect(database=r'ims.db')
         cur = con.cursor()
         try:
-            if self.var_search_by.get() == "Odabrati":
+            if self.var_searchby.get() == "Odabrati":
                 messagebox.showerror("Greška", "Morate odabrati opciju za pretragu.", parent=self.root)
-            elif self.var_search_txt.get() == "":
+            elif self.var_searchtxt.get() == "":
                 messagebox.showerror("Greška", "Polje za pretragu ne može biti prazno.", parent=self.root)
-            elif self.var_search_by.get() not in self.COLUMN_MAP:
+            elif self.var_searchby.get() not in self.COLUMN_MAP:
                 messagebox.showerror("Greška", "Nevažeća kolona pretrage.", parent=self.root)
             else:
-                col = self.COLUMN_MAP[self.var_search_by.get()]
-                search_val = f"%{self.var_search_txt.get()}%"
-                cur.execute(f"SELECT * FROM employee WHERE {col} LIKE ?", (search_val,))
+                col = self.COLUMN_MAP[self.var_searchby.get()]
+                search_val = f"%{self.var_searchtxt.get()}%"
+                cur.execute(f"SELECT * FROM product WHERE {col} LIKE ?", (search_val,))
                 rows = cur.fetchall()
                 if rows:
-                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                    self.ProductTable.delete(*self.ProductTable.get_children())
                     for row in rows:
-                        self.EmployeeTable.insert('', END, values=row)
+                        self.ProductTable.insert('', END, values=row)
                 else:
                     messagebox.showerror("Greška", "Nije pronađen.", parent=self.root)
         except Exception as ex:
