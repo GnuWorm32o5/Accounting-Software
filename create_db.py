@@ -19,12 +19,55 @@ def create_db():
 
     cur.execute("""CREATE TABLE IF NOT EXISTS supplier
                    (
-                       invoiceINTEGER PRIMARY KEY,
-                       name TEXT,
-                       contact TEXT,
-                       description TEXT
+                       invoice
+                       INTEGER
+                       PRIMARY
+                       KEY,
+                       name
+                       TEXT,
+                       contact
+                       TEXT,
+                       description
+                       TEXT
                    )""")
     con.commit()
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS category
+                   (
+                       cid
+                       INTEGER
+                       PRIMARY
+                       KEY,
+                       name
+                       TEXT
+                   )""")
+    con.commit()
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS product
+                   (
+                       pid
+                       INTEGER
+                       PRIMARY
+                       KEY
+                       AUTOINCREMENT,
+                       category
+                       TEXT,
+                       supplier
+                       TEXT,
+                       name
+                       TEXT,
+                       product
+                       TEXT,
+                       price
+                       TEXT,
+                       qty
+                       TEXT,
+                       status
+                       TEXT
+                   )""")
+    con.commit()
+
+
     con.close()
 
 create_db()

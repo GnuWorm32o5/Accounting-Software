@@ -7,7 +7,7 @@ class productClass:
     def __init__(self,root, on_close=None):
         self.on_close = on_close
         self.root = root
-        # self.create_db()
+        self.create_db()
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
         x = (screen_w // 2) - (1350 // 2)
@@ -25,7 +25,10 @@ class productClass:
 
 
         self.var_category = StringVar()
-        self.var_product = StringVar()
+        self.cat_list=[]
+        self.sup_list=[]
+        self.fetch_cat_sup()
+        self.var_pid = StringVar()
         self.var_supplier = StringVar()
         self.var_name = StringVar()
         self.var_price = StringVar()
@@ -79,15 +82,15 @@ class productClass:
         lbl_status.place(x=30,y=350)
 
         #====Fields==================================================================================================================
-        cmb_cat = ttk.Combobox(product_frame, textvariable=self.var_category, values=("Odabrati","Kategorija","Dobavljač"), state="readonly")
+        cmb_cat = ttk.Combobox(product_frame, textvariable=self.var_category, values=self.cat_list, state="readonly")
         cmb_cat.place(x=250,y=55)
         cmb_cat.current(0)
 
-        cmb_supplier = ttk.Combobox(product_frame, textvariable=self.var_supplier, values=("Odabrati","Kategorija","Dobavljač"), state="readonly")
+        cmb_supplier = ttk.Combobox(product_frame, textvariable=self.var_supplier, values=self.sup_list, state="readonly")
         cmb_supplier.place(x=250, y=110)
         cmb_supplier.current(0)
 
-        txt_product = Entry(product_frame, textvariable=self.var_product, font=("Segoe UI", 12), bg="white")
+        txt_product = Entry(product_frame, textvariable=self.var_name, font=("Segoe UI", 12), bg="white")
         txt_product.place(x=250, y=170)
 
         txt_price = Entry(product_frame, textvariable=self.var_price, font=("Segoe UI", 12), bg="white")
@@ -102,16 +105,16 @@ class productClass:
 
         # =========Buttons================================================================================================
 
-        btn_save=Button(product_frame, font=("Segoe UI", 12), bg="white", relief="groove", text="Sačuvati")
+        btn_save=Button(product_frame, command=self.add, font=("Segoe UI", 12), bg="white", relief="groove", text="Sačuvati")
         btn_save.place(x=100, y=400)
 
-        btn_update = Button(product_frame, font=("Segoe UI", 12), bg="white", relief="groove", text="Ažurirati")
+        btn_update = Button(product_frame, command=self.update, font=("Segoe UI", 12), bg="white", relief="groove", text="Ažurirati")
         btn_update.place(x=200, y=400)
 
-        btn_delete = Button(product_frame,  font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
+        btn_delete = Button(product_frame,command=self.delete, font=("Segoe UI", 12), bg="white", relief="groove", text="Obrisati")
         btn_delete.place(x=300, y=400)
 
-        btn_clear = Button(product_frame, font=("Segoe UI", 12), bg="white", relief="groove", text="Očistiti polja")
+        btn_clear = Button(product_frame,command= self.clear, font=("Segoe UI", 12), bg="white", relief="groove", text="Očistiti polja")
         btn_clear.place(x=400, y=400)
 
         # ========Search Frame================================================================================================
@@ -125,15 +128,15 @@ class productClass:
         cmb_search.place(x=10, y=10, width=180)
         cmb_search.current(0)
 
-        txt_search = Entry(SearchFrame, textvariable=self.var_searchtxt, font=("Segoe UI", 15), bg="white").place(
-            x=300, y=10, width=300)
+        txt_search = (Entry(SearchFrame, textvariable=self.var_searchtxt, font=("Segoe UI", 15), bg="white"))
+        txt_search.place(x=300, y=10, width=300)
         btn_search = Button(SearchFrame, text="Pretraga", font=("Segoe UI", 15), bg="white")
         btn_search.place(x=650, y=8, width=200, height=30)
 
 
         #=======Frame=======================================================================================================
         p_frame = Frame(self.root, bd=3, relief="groove")
-        p_frame.place(x=10, y=500, width=600,height=390)
+        p_frame.place(x=680,y=200,width=650,height=450)
 
         scrolly = Scrollbar(p_frame, orient="vertical")
         scrollx = Scrollbar(p_frame, orient="horizontal")
@@ -168,10 +171,9 @@ class productClass:
         scrollx.pack(side=BOTTOM, fill=X)
         self.ProductTable.pack(fill=BOTH, expand=1)
 
-        # self.ProductTable.bind("<ButtonRelease-1>", self.get_data)
+        self.ProductTable.bind("<ButtonRelease-1>", self.get_data)
 
         self.show()
-
         #=====Func====================================================================================================================
 
     def create_db(self):
@@ -181,7 +183,7 @@ class productClass:
                        pid INTEGER PRIMARY KEY AUTOINCREMENT,
                        category TEXT,
                        supplier TEXT,
-                       product TEXT,
+                       name TEXT,
                        price TEXT,
                        qty TEXT,
                        status TEXT
@@ -193,35 +195,55 @@ class productClass:
         con = sqlite3.connect(database=r'ims.db')
         cur = con.cursor()
         try:
-            if self.var_category.get() == "":
-                messagebox.showerror("Greška", "ID Zaposlenog mora biti unet!", parent=self.root)
+            if self.var_category.get() == "Odabrati" or self.var_supplier.get()=="Odabrati" or self.var_name.get()=="" or self.var_status.get()=="Odabrati":
+                messagebox.showerror("Greška", "Sva polja moraju biti popunjena i izabrana!", parent=self.root)
             else:
-                cur.execute("Select  * from employee where eid=?", (self.var_emp_id.get(),))
+                cur.execute("Select  * from product where name=?", (self.var_name.get(),))
                 row = cur.fetchone()
                 if row is not None:
-                    messagebox.showerror("Greška", "Broj je prethodno dodeljen postojećem zaposlenom.",
+                    messagebox.showerror("Greška", "Proizvod po zadatom kriterijumu već postoji.",
                                          parent=self.root)
                 else:
                     cur.execute(
-                        "Insert into employee (eid, name, email, gender, contact, dob, doj, password, utype, adress, salary) values(?,?,?,?,?,?,?,?,?,?,?)",
+                        "INSERT into product (category, supplier, name, price, qty, status) values(?,?,?,?,?,?)",
                         (
-                            self.var_emp_id.get(),
+                            self.var_category.get(),
+                            self.var_supplier.get(),
                             self.var_name.get(),
-                            self.var_email.get(),
-                            self.var_gender.get(),
-                            self.var_contact.get(),
-                            self.var_dob.get(),
-                            self.var_doj.get(),
-                            self.var_password.get(),
-                            self.var_utype.get(),
-                            self.var_adress.get(),
-                            self.var_salary.get()
+                            self.var_price.get(),
+                            self.var_qty.get(),
+                            self.var_status.get()
                         ))
                     con.commit()
-                    messagebox.showinfo("Uspeh!", "Uspešno dodat zaposleni na spisak!", parent=self.root)
+                    messagebox.showinfo("Uspeh!", "Uspešno dodat proizvod na spisak!", parent=self.root)
                     self.show()
         except Exception as ex:
-            messagebox.showerror("Greška", f" Greška iz razloga: {str(ex)}")
+            messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
+        finally:
+            con.close()
+
+    def fetch_cat_sup(self):
+        con=sqlite3.connect(database=r"ims.db")
+        cur=con.cursor()
+        try:
+            cur.execute("Select name from category")
+            cat=cur.fetchall()
+            self.cat_list.append("Odabrati")
+            if len(cat)>0:
+                del self.cat_list[:]
+                self.cat_list.append("Odabrati")
+                for i in cat:
+                    self.cat_list.append(i[0])
+
+            cur.execute("Select name from supplier")
+            sup = cur.fetchall()
+            if len(sup) > 0:
+                del self.sup_list[:]
+                self.sup_list.append("Odabrati")
+                for i in sup:
+                    self.sup_list.append(i[0])
+        except Exception as ex:
+            messagebox.showerror("Greška", f"Greška iz razloga! {str(ex)}", parent=self.root)
         finally:
             con.close()
 
@@ -240,66 +262,53 @@ class productClass:
             con.close()
 
     def get_data(self, event):
-        f = self.EmployeeTable.focus()
-        content = self.EmployeeTable.item(f)
+        f = self.ProductTable.focus()
+        content = self.ProductTable.item(f)
         row = content['values']
-        if not row:  # ✅ guard against empty click
+        if not row:
             return
-        # remove print(row) before shipping
-        self.var_emp_id.set(row[0])
-        self.var_name.set(row[1])
-        self.var_email.set(row[2])
-        self.var_gender.set(row[3])
-        self.var_contact.set(row[4])
-        self.var_dob.set(row[5])
-        self.var_doj.set(row[6])
-        self.var_password.set(row[7])
-        self.var_utype.set(row[8])
-        self.var_adress.set(row[9])
-        self.var_salary.set(str(row[10]))
+        self.var_pid.set(row[0])
+        self.var_category.set(row[1])
+        self.var_supplier.set(row[2])
+        self.var_name.set(row[3])
+        self.var_price.set(row[4])
+        self.var_qty.set(row[5])
+        self.var_status.set(row[6])
 
     def update(self):
-        if self.var_emp_id.get() == "":
-            messagebox.showerror("Greška", "ID Zaposlenog mora biti unet!", parent=self.root)
+        if self.var_pid.get() == "":
+            messagebox.showerror("Greška", "Proizvod sa liste mora biti odabran!", parent=self.root)
             return
 
         con = sqlite3.connect(database=r'ims.db')
         cur = con.cursor()
         try:
-            cur.execute("SELECT * FROM employee WHERE eid=?", (self.var_emp_id.get(),))
+            cur.execute("SELECT * FROM product WHERE pid=?", (self.var_pid.get(),))
             row = cur.fetchone()
             if row is None:
-                messagebox.showerror("Greška", "Nevažeći ID zaposlenog.", parent=self.root)
+                messagebox.showerror("Greška", "Nevažeći proizvod.", parent=self.root)
             else:
                 cur.execute(
-                    """UPDATE employee
-                       SET name=?,
-                           email=?,
-                           gender=?,
-                           contact=?,
-                           dob=?,
-                           doj=?,
-                           password=?,
-                           utype=?,
-                           adress=?,
-                           salary=?
-                       WHERE eid = ?""",
+                    """UPDATE product
+                       SET category=?,
+                           supplier=?,
+                           name=?,
+                           price=?,
+                           qty=?,
+                           status=?
+                       WHERE pid = ?""",
                     (
+                        self.var_category.get(),
+                        self.var_supplier.get(),
                         self.var_name.get(),
-                        self.var_email.get(),
-                        self.var_gender.get(),
-                        self.var_contact.get(),
-                        self.var_dob.get(),
-                        self.var_doj.get(),
-                        self.var_password.get(),
-                        self.var_utype.get(),
-                        self.var_adress.get(),
-                        self.var_salary.get(),
-                        self.var_emp_id.get()  # eid goes LAST — it's the WHERE clause
+                        self.var_price.get(),
+                        self.var_qty.get(),
+                        self.var_status.get(),
+                        self.var_pid.get()
                     )
                 )
                 con.commit()
-                messagebox.showinfo("Uspeh!", "Uspešno ažuriran zaposleni sa spiska!", parent=self.root)
+                messagebox.showinfo("Uspeh!", "Uspešno ažuriran proizvod sa spiska!", parent=self.root)
                 self.show()
         except Exception as ex:
             messagebox.showerror("Greška", f"Greška iz razloga: {str(ex)}", parent=self.root)
@@ -310,18 +319,18 @@ class productClass:
         con = sqlite3.connect(database=r'ims.db')
         cur = con.cursor()
         try:
-            if self.var_emp_id.get() == "":
-                messagebox.showerror("Greška", "ID zaposlenog mora biti unet!", parent=self.root)
+            if self.var_pid.get() == "":
+                messagebox.showerror("Greška", "Proizvod mora biti odabran!", parent=self.root)
             else:
-                cur.execute("Select * from employee where eid=?", (self.var_emp_id.get(),))
+                cur.execute("Select * from product where pid=?", (self.var_pid.get(),))
                 row = cur.fetchone()
                 if row is None:
-                    messagebox.showerror("Greška", "Nevažeći ID zaposlenog.", parent=self.root)
+                    messagebox.showerror("Greška", "Nevažeći prozivod.", parent=self.root)
                 else:
-                    op = messagebox.askyesno("Potvrda", "Da li stvarno  želite da obrišete zaposlenog?",
+                    op = messagebox.askyesno("Potvrda", "Da li stvarno  želite da obrišete proizvod?",
                                              parent=self.root)
                     if op == True:
-                        cur.execute("delete from employee where eid=?", (self.var_emp_id.get(),))
+                        cur.execute("delete from product where pid=?", (self.var_pid.get(),))
                         con.commit()
                         messagebox.showinfo("Brisanje", "Podaci uspešno obrisani.")
                         self.clear()
@@ -332,25 +341,15 @@ class productClass:
             con.close()
 
     def clear(self):
-        self.var_emp_id.set("")
+        self.var_category.set("Odabrati")
+        self.var_supplier.set("Odabrati")
         self.var_name.set("")
-        self.var_email.set("")
-        self.var_gender.set("")
-        self.var_contact.set("")
-        self.var_dob.set("")
-        self.var_doj.set("")
-        self.var_password.set("")
-        self.var_utype.set("Korisnik")
-        self.var_adress.set("")
-        self.var_salary.set("")
-        self.var_search_txt.set("")
-        self.var_search_by.set("Odabrati")
+        self.var_qty.set("")
+        self.var_price.set("")
+        self.var_status.set("Odabrati")
 
-    COLUMN_MAP = {
-        "Ime": "name",
-        "Email": "email",
-        "Kontakt": "contact"
-    }
+
+
 
     def search(self):
         con = sqlite3.connect(database=r'ims.db')
