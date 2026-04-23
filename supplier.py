@@ -56,7 +56,7 @@ class supplierClass:
         btn_back.place(x=15, y=50)
 
 
-        #====Content===and Fields===================================================================================================================
+        #====Content and Fields===================================================================================================================
 
         lbl_supplier_invoice=Label(self.root,text="Broj fakture",font=("Segoe UI", 12), bg="white")
         lbl_supplier_invoice.place(x =200, y=200)
