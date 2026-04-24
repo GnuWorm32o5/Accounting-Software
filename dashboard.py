@@ -45,7 +45,7 @@ class IMS:
 
         # Dugme za logout=============================================================================================
         btn_logout = Button(self.root, text="IZLAZ",command=self.root.destroy, font=("Segoe UI", 10, "bold"), bd=2, relief=GROOVE)
-        btn_logout.place(relx=1, y=0, width=150, height=50, anchor=NE)
+        btn_logout.place(relx=1, y=0, width=150, height=52, anchor=NE)
 
 
 
