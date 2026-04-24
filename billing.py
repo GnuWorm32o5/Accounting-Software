@@ -129,12 +129,25 @@ class BillClass:
         txt_contact = Entry(CustomerFrame, textvariable=self.var_contact, font=("Segoe UI", 12), bd=2, relief=GROOVE,bg="white")
         txt_contact.place(x=150, y=80, width=200, height=30)
 
+        #===Frames===================================================================================================
+        #CalCart============================================================================
         Cal_Cart_Frame = Frame(self.root, bd=1, relief=GROOVE, bg="white")
         Cal_Cart_Frame.place(x=420, y=250, width=550, height=410)
+        #Calculator============================================================================
+        self.var_cal_input = StringVar()
 
         Cal_Frame = Frame(Cal_Cart_Frame, bg="white", bd=2, relief=GROOVE)
         Cal_Frame.place(x=3, y=3, width=270, height=400)
 
+        self.txt_cal_input = Entry(Cal_Frame, textvariable=self.var_cal_input, font=("Segoe UI", 12), bg="white")
+        self.txt_cal_input.grid()
+
+        
+
+
+
+
+        #Cart=================================================================================
         Cart_Frame = Frame(Cal_Cart_Frame, bd=3, relief="groove")
         Cart_Frame.place(x=270, y=3, width=280, height=400)
 
@@ -206,6 +219,10 @@ class BillClass:
 
         btn_clear_cart = Button(AddCartWidgetsFrame, text="Dodati", font=("Segoe UI", 12), bg="lightgray", bd=5,relief=GROOVE)
         btn_clear_cart.place(x=320, y=70, width=200, height=30)
+
+
+
+
 
 
 
