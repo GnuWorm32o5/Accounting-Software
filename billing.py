@@ -107,12 +107,12 @@ class BillClass:
         scrollx.pack(side=BOTTOM, fill=X)
         self.ProductTable.pack(fill=BOTH, expand=1)
 
-        lbl_note = Label(
-            self.root,
-            text="Napomena: Uneti 0 količinu kako bi se proizvod obrisao iz izabranih.",
-            font=("Segoe UI", 12), bd=1, bg="white", relief=GROOVE
-        )
-        lbl_note.pack(side=BOTTOM, fill=X)
+        # lbl_note = Label(
+        #     self.root,
+        #     text="Napomena: Uneti 0 količinu kako bi se proizvod obrisao iz izabranih.",
+        #     font=("Segoe UI", 12), bd=1, bg="white", relief=GROOVE
+        # )
+        # lbl_note.pack(side=BOTTOM, fill=X)
 
         # === Customer Frame ===================================================
 
@@ -246,7 +246,48 @@ class BillClass:
         btn_add_cart = Button(AddCartWidgetsFrame, text="Dodati", font=("Segoe UI", 12), bg="lightgray", bd=5, relief=GROOVE)
         btn_add_cart.place(x=320, y=70, width=200, height=30)
 
-    # === Methods ==============================================================
+        # === Billing area ==============================================================
+
+        billFrame = Frame(self.root,bd=2,relief=GROOVE,bg="white")
+        billFrame.place(x=970,y=110,width=379,height=500)
+
+        bTitle = Label(billFrame,text="Račun kupca", font=("Segoe UI", 15), bg="white")
+        bTitle.pack(side=TOP , fill=X)
+        scrolly = Scrollbar(billFrame,orient=VERTICAL, width=5)
+        scrolly.pack(side=RIGHT, fill=Y)
+
+        self.txt_bill_area = Text(billFrame, font=("Segoe UI", 15), bg="white")
+        self.txt_bill_area.pack(fill=BOTH, expand=1)
+        scrolly.config(command=self.txt_bill_area.yview)
+
+        #==== Billing buttons ===========================================================
+
+        billMenuFrame = Frame(self.root,bd=2,relief=GROOVE,bg="white")
+        billMenuFrame.place(x=970, y=610, width=379, height=160)
+
+        self.lbl_amnt = Label(billMenuFrame, text='Iznos bez \n[0]', font=("Segoe UI", 12), bg="white")
+        self.lbl_amnt.place(x=2,y=5,width=120, height=70)
+
+        self.lbl_tax = Label(billMenuFrame, text='Porez 20%\n[0]', font=("Segoe UI", 12), bg="white")
+        self.lbl_tax.place(x=120, y=5, width=120, height=70)
+
+        self.lbl_net_pay = Label(billMenuFrame, text='Ukupan račun\n[0]', font=("Segoe UI", 12, "bold"), bg="white")
+        self.lbl_net_pay.place(x=240, y=5, width=120, height=70)
+
+
+
+        btn_clear_all = Button(billMenuFrame, text='Obrisati', font=("Segoe UI", 12), bg="white", wraplength=90)
+        btn_clear_all.place(x=2, y=80, width=100, height=70)
+
+        btn_generate = Button(billMenuFrame, text='Generisanje računa', font=("Segoe UI", 12), bg="white",wraplength=100)
+        btn_generate.place(x=120, y=80, width=100, height=70)
+
+        btn_print = Button(billMenuFrame, text='Štampa računa', font=("Segoe UI", 12), bg="white", wraplength=90)
+        btn_print.place(x=240, y=80, width=100, height=70)
+
+
+         # === Methods ==============================================================
+
 
     def get_input(self, num):
         current = self.var_cal_input.get()
@@ -261,7 +302,7 @@ class BillClass:
             allowed = set("0123456789+-*/.() ")
             if not all(c in allowed for c in expression):
                 raise ValueError("Nedozvoljen unos.")
-            result = eval(expression)  
+            result = eval(expression)
             self.var_cal_input.set(result)
         except Exception:
             messagebox.showerror("Greška", "Nevažeći izraz.")
